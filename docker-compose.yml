@@ -1,0 +1,19 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Set a unique container name using COMPOSE_PROJECT_NAME to avoid conflicts when running multiple projects
+    container_name: ${COMPOSE_PROJECT_NAME:-google-agents}-app
+    volumes:
+      # Mount the parent directory (project root) to /workspace inside the container
+      - ..:/workspace:cached
+    environment:
+      # Pass through host environment variables (such as API keys) automatically
+      - GEMINI_API_KEY
+      - GCP_PROJECT_ID
+      - GCP_REGION
+
+    # Keep container running in the background for VS Code Dev Containers
+    command: sleep infinity
+    init: true
