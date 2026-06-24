@@ -8,6 +8,8 @@ services:
     volumes:
       # Mount the parent directory (project root) to /workspace inside the container
       - ..:/workspace:cached
+      # Mount host's Gemini/Antigravity global config directory (falls back to a dummy folder if not specified)
+      - ${HOST_GEMINI_CONFIG_DIR:-./.gemini_config_dummy}:/home/vscode/.gemini/config:cached
     environment:
       # Pass through host environment variables (such as API keys) automatically
       - GEMINI_API_KEY

@@ -6,7 +6,8 @@
   "service": "app",
   "workspaceFolder": "/workspace",
   "features": {
-    "ghcr.io/devcontainers/features/gcloud:1": {}
+    "ghcr.io/devcontainers/features/gcloud:1": {},
+    "ghcr.io/devcontainers/features/node:1": {}
   },
   "customizations": {
     "vscode": {
@@ -24,5 +25,5 @@
       ]
     }
   },
-  "postCreateCommand": "if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; elif [ -f pyproject.toml ]; then uv pip install --system -e .; fi"
+  "postCreateCommand": "if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; elif [ -f pyproject.toml ]; then uv pip install --system -e .; fi && uvx google-agents-cli setup --skip-auth"
 }

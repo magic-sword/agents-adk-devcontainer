@@ -1,6 +1,6 @@
 # Agents CLI & ADK 2.0 Dev Container テンプレート
 
-このリポジトリは、Google の Agents CLI と ADK 2.0 (Agent Development Kit) を用いたエージェント開発環境を、VS Code の Dev Containers 拡張機能を利用して簡単に構築するためのテンプレートです。
+このリポジトリは、Google の Agents CLI と ADK 2.0 (Agent Development Kit) を用いたエージェント開発環境を、Antigravity IDE（VS Code の Dev Containers 拡張機能を利用）から簡単に構築するためのテンプレートです。
 
 ## 特徴
 
@@ -8,6 +8,8 @@
 - **Agents CLI & SDK プリインストール**: コンテナのシステム Python 環境に `google-agents-cli` があらかじめインストールされており、コンテナ起動直後から `google-agents` コマンドや `import google.genai` がそのまま使用可能です。
 - **.venv 構築不要**: 必要なライブラリはすべてコンテナ内のシステム環境に直接配置されるため、仮想環境 (`.venv`) をローカルに作成・構築・マウントする手間が一切ありません。ホストOS（Windows等）との競合も発生しません。
 - **gcloud CLI 搭載**: Google Cloud 連携のための CLI を同梱。ホストマシンの認証情報が自動的に共有されます。
+- **グローバルルールのマウント**: ホスト側のAntigravity（Gemini系エージェント）のグローバルルールをコンテナ内に安全かつオプショナルにマウント・共有可能です。
+- **ADK自動セットアップ**: コンテナ起動時に Node.js (npx) のインストールから `google-agents-cli setup` までを自動で完了。エージェントがすぐにADKの仕様を理解できる状態になります。
 - **MIT-0 ライセンス**: 著作権表記不要で、どなたでも自由に改変・コピー・再配布いただけます。
 
 ## 親プロジェクトへの導入手順
@@ -26,18 +28,18 @@ git submodule update --init --recursive
 この開発環境を利用するには、ホストマシンに以下がインストールされている必要があります：
 
 1. **Docker Desktop** (または WSL 2 等の Docker ランタイム)
-2. **VS Code** (Visual Studio Code)
+2. **Antigravity IDE**
 3. **VS Code "Dev Containers" 拡張機能** (必須):
-   - VS Code の拡張機能ビュー (`Ctrl+Shift+X`) を開き、**`Dev Containers`** (ID: `ms-vscode-remote.remote-containers`) を検索してインストールします。
-   - または、ブラウザで [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) からインストールするか、VS Code がインストールされている環境で [こちらのリンク(vscode:extension/ms-vscode-remote.remote-containers)](vscode:extension/ms-vscode-remote.remote-containers) をクリックして直接インストールページを開くことも可能です。
+   - Antigravity IDE の拡張機能ビュー (`Ctrl+Shift+X`) を開き、**`Dev Containers`** (ID: `ms-vscode-remote.remote-containers`) を検索してインストールします。
+   - または、ブラウザで [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) からインストールするか、Antigravity IDE がインストールされている環境で [こちらのリンク(vscode:extension/ms-vscode-remote.remote-containers)](vscode:extension/ms-vscode-remote.remote-containers) をクリックして直接インストールページを開くことも可能です。
 
 ## 利用手順
 
-### 1. VS Code でプロジェクトを開く
-親プロジェクトのフォルダを VS Code で開きます。
+### 1. Antigravity IDE でプロジェクトを開く
+親プロジェクトのフォルダを Antigravity IDE で開きます。
 
 ### 2. コンテナの起動
-VS Code の右下に表示されるポップアップ、またはコマンドパレット（`Ctrl+Shift+P`）から **「Dev Containers: Reopen in Container」**（コンテナで再度開く）を選択します。
+Antigravity IDE の右下に表示されるポップアップ、またはコマンドパレット（`Ctrl+Shift+P`）から **「Dev Containers: Reopen in Container」**（コンテナで再度開く）を選択します。
 自動的に Docker イメージのビルドとコンテナの起動が行われます。
 
 ### 3. 依存パッケージの自動同期 (オプション)
@@ -57,20 +59,12 @@ google-agents --help
 ```
 
 ### 5. Google Cloud の認証
-Google Cloud の認証は、コンテナ内（VS Code 統合ターミナルなど）またはホスト（PC本体）のターミナルから `docker compose exec` を使って完結させることができます。
+Google Cloud の認証は、コンテナ内（Antigravity IDE 統合ターミナルなど）で実行します。
 
-#### パターン A: コンテナ内のターミナルで実行する場合
 コンテナ内のターミナルで以下のコマンドを実行し、表示される URL から Google アカウントにログインして認証を完了させます。
 
 ```bash
 gcloud auth login
-```
-
-#### パターン B: ホストのターミナルから `docker compose exec` で実行する場合
-ホストマシン（PC本体）のターミナルから、起動中のコンテナに対してコマンドを送り認証を完了させます（親プロジェクトのルートディレクトリで実行してください）。
-
-```bash
-docker compose exec app gcloud auth login
 ```
 
 ログイン完了後、以下のコマンドで認証されたアカウントがアクティブになっていることを確認できます。
@@ -80,10 +74,7 @@ gcloud auth list
 ```
 
 ### 6. 親プロジェクトからのコマンド実行例
-コンテナ起動後、プロジェクトのコード（`main.py` など）やツールを実行するには、以下のいずれかの方法を使用します。
-
-#### パターン A: VS Code の統合ターミナルから実行 (推奨)
-VS Code でプロジェクトを開きコンテナ内に入ると、VS Code の統合ターミナル (`Ctrl+~`) は自動的にコンテナ内のシェルに接続されます。そのため、ホスト側を意識せずにそのままコマンドを実行できます。
+Antigravity IDE でプロジェクトを開きコンテナ内に入ると、統合ターミナル (`Ctrl+~`) は自動的にコンテナ内のシェルに接続されます。そのため、ホスト側を意識せずにそのままコマンドを実行できます。
 
 ```bash
 # プロジェクト内の Python コードを実行
@@ -91,18 +82,6 @@ python main.py
 
 # プリインストールされている google-agents コマンドを実行
 google-agents --help
-```
-
-#### パターン B: ホストのターミナルから `docker compose exec` で実行
-ホスト (PC本体) のターミナル (PowerShell, bash 等) から、親プロジェクトのルートディレクトリで `docker compose` 経由で実行します。
-※ コンテナが起動していない場合は、事前に `docker compose up -d` で起動しておいてください。
-
-```bash
-# コンテナ内の Python を使ってコードを実行
-docker compose exec app python main.py
-
-# コンテナ内の Agents CLI を直接実行
-docker compose exec app google-agents --help
 ```
 
 ---
@@ -138,7 +117,7 @@ COMPOSE_PROJECT_NAME=my-unique-agent-project
    * **Windows (PowerShell) の場合**:
      ```powershell
      [System.Environment]::SetEnvironmentVariable('GEMINI_API_KEY', 'your-actual-api-key', 'User')
-     # 設定を反映させるため、VS Code を一度完全に再起動してください
+      # 設定を反映させるため、Antigravity IDE を一度完全に再起動してください
      ```
    * **Mac / Linux / WSL (bash/zsh) の場合**:
      `~/.bashrc` や `~/.zshrc` に以下を追記します。
@@ -154,3 +133,13 @@ COMPOSE_PROJECT_NAME=my-unique-agent-project
    ```
    これにより、Docker Compose 起動時にホストマシンの環境変数 `GEMINI_API_KEY` の値がコンテナ内に安全に注入されます。
 
+### 4. グローバルルールのマウント設定 (HOST_GEMINI_CONFIG_DIR)
+ホスト側にあるエージェント（Antigravity等）のグローバルルール（Global Customizations Root）を、コンテナ内の `/home/vscode/.gemini/config` にマウントして共有できます。
+
+設定するには、`.env` ファイルにホスト側の設定フォルダの絶対パスを指定します。
+
+- **Windows**: `HOST_GEMINI_CONFIG_DIR=C:\Users\<ユーザー名>\.gemini\config`
+- **macOS/Linux**: `HOST_GEMINI_CONFIG_DIR=/Users/<ユーザー名>/.gemini/config` または `/home/<ユーザー名>/.gemini/config`
+
+#### フォールバック機能（マウントしない場合）
+マウントが不要な開発者の場合は、`.env` に `HOST_GEMINI_CONFIG_DIR` を記述しない（または空にする）ことで、プロジェクト内に自動生成される `./.gemini_config_dummy` ダミーフォルダをマウント先にフォールバックさせます。これにより、設定を省略した開発者でもエラーなしでコンテナが正常に構築されます。
