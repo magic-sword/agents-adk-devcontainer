@@ -1,12 +1,12 @@
 FROM mcr.microsoft.com/devcontainers/python:3.14-bookworm
 
-# Install uv from official image
+# 公式イメージから uv をインストール
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install google-agents-cli to system Python environment as root
+# google-agents-cli を root 権限でシステムの Python 環境にインストール
 RUN uv pip install --system google-agents-cli
 
-# Use vscode user (pre-configured in devcontainers images)
+# ベースイメージ（devcontainers）側であらかじめ定義されている vscode ユーザーをそのまま使用します
 USER vscode
 WORKDIR /workspace
 

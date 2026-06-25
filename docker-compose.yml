@@ -8,6 +8,8 @@ services:
     volumes:
       # 親ディレクトリ（プロジェクトのルート）をコンテナ内の /workspace にマウントします
       - ..:/workspace:cached
+      # ホスト側のGeminiグローバルルール設定ディレクトリをコンテナ内にマウントして共有します
+      - ~/.gemini/config:/home/vscode/.gemini/config
     environment:
       # ホスト側の環境変数（APIキーなど）を自動的に引き継ぎます
       - GEMINI_API_KEY
