@@ -10,6 +10,8 @@ services:
       - ..:/workspace:cached
       # ホスト側のGeminiグローバルルール設定ディレクトリをコンテナ内にマウントして共有します
       - ~/.gemini/config:/home/vscode/.gemini/config
+      # ホスト側のグローバルルールファイル自体も直接コンテナ内にマウントして共有します
+      - ~/.gemini/GEMINI.md:/home/vscode/.gemini/GEMINI.md
     environment:
       # ホスト側の環境変数（APIキーなど）を自動的に引き継ぎます
       - GEMINI_API_KEY
