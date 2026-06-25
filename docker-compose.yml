@@ -3,19 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # Set a unique container name using COMPOSE_PROJECT_NAME to avoid conflicts when running multiple projects
+    # 複数プロジェクト実行時の衝突を避けるため、COMPOSE_PROJECT_NAMEを使用してユニークなコンテナ名を設定します
     container_name: ${COMPOSE_PROJECT_NAME:-google-agents}-app
     volumes:
-      # Mount the parent directory (project root) to /workspace inside the container
+      # 親ディレクトリ（プロジェクトのルート）をコンテナ内の /workspace にマウントします
       - ..:/workspace:cached
-      # Mount host's Gemini/Antigravity global config directory (falls back to a dummy folder if not specified)
-      - ${HOST_GEMINI_CONFIG_DIR:-./.gemini_config_dummy}:/home/vscode/.gemini/config:cached
     environment:
-      # Pass through host environment variables (such as API keys) automatically
+      # ホスト側の環境変数（APIキーなど）を自動的に引き継ぎます
       - GEMINI_API_KEY
       - GCP_PROJECT_ID
       - GCP_REGION
 
-    # Keep container running in the background for VS Code Dev Containers
+    # Antigravity IDEでアタッチできるように、コンテナをバックグラウンドで起動し続けます
     command: sleep infinity
-    init: true

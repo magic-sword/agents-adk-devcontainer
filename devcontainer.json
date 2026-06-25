@@ -9,21 +9,5 @@
     "ghcr.io/dhoeric/features/google-cloud-cli:1": {},
     "ghcr.io/devcontainers/features/node:1": {}
   },
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.analysis.extraPaths": [
-          "/workspace"
-        ]
-      },
-      "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "charliermarsh.ruff",
-        "ms-azuretools.vscode-docker"
-      ]
-    }
-  },
   "postCreateCommand": "if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; elif [ -f pyproject.toml ]; then uv pip install --system -e .; fi && uvx google-agents-cli setup --skip-auth"
 }
