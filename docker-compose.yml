@@ -18,5 +18,9 @@ services:
       - GCP_PROJECT_ID
       - GCP_REGION
 
+    # A2Aプロトコル互換エージェントサーバー用のポートフォワード設定
+    ports:
+      - "8001:8001"
+
     # Antigravity IDEでアタッチできるように、コンテナをバックグラウンドで起動し続けます
     command: sleep infinity
